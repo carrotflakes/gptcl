@@ -1,0 +1,13 @@
+[package]
+name = "examples"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gptcl = { path = "../gptcl" }
+serde_json = "1.0"
+
+gptcl-hyper = { path = "../gptcl-hyper" }
+tokio = { version = "1", features = ["full"] }
+
+dotenv = "0"
