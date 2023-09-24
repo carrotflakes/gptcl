@@ -7,7 +7,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let openai_api_key = std::env::var("OPENAI_API_KEY").unwrap();
 
-    let client = GptClient::new(Box::new(HyperClient::new()), openai_api_key);
+    let client = GptClient::new(
+        Box::new(HyperClient::new()),
+        openai_api_key,
+        gptcl::MODEL_GPT_3_5_TURBO,
+    );
 
     let res = client
         .call(&[

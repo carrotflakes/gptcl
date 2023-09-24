@@ -12,11 +12,11 @@ pub struct GptClient {
 }
 
 impl GptClient {
-    pub fn new(client: Box<dyn HttpClient>, api_key: String) -> Self {
+    pub fn new(client: Box<dyn HttpClient>, api_key: String, model: &str) -> Self {
         Self {
             client,
             api_key,
-            model: "gpt-3.5-turbo".to_string(),
+            model: model.to_string(),
             max_tokens: Some(100),
             temperature: None,
             top_p: None,
