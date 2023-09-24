@@ -66,7 +66,6 @@ impl GptClient {
             stop: self.stop.clone(),
             functions,
         };
-        println!("Request: {:?}", &req_body);
 
         self.client
             .post(

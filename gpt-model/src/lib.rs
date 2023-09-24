@@ -29,7 +29,7 @@ pub struct ChatMessage {
 }
 
 impl ChatMessage {
-    pub fn from_user_message(content: String) -> Self {
+    pub fn from_user(content: String) -> Self {
         Self {
             role: ChatRole::User,
             content: Some(content),
@@ -38,7 +38,7 @@ impl ChatMessage {
         }
     }
 
-    pub fn from_assistant_message(content: String) -> Self {
+    pub fn from_assistant(content: String) -> Self {
         Self {
             role: ChatRole::Assistant,
             content: Some(content),
@@ -47,7 +47,7 @@ impl ChatMessage {
         }
     }
 
-    pub fn from_system_message(content: String) -> Self {
+    pub fn from_system(content: String) -> Self {
         Self {
             role: ChatRole::System,
             content: Some(content),
