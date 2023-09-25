@@ -1,8 +1,8 @@
 use crate::http_client::HttpClient;
 
 #[derive(Debug)]
-pub struct GptClient {
-    client: Box<dyn HttpClient>,
+pub struct GptClient<C: HttpClient> {
+    client: C,
     pub api_key: String,
     pub model: String,
     pub max_tokens: Option<u32>,
@@ -11,8 +11,8 @@ pub struct GptClient {
     pub stop: Option<Vec<String>>,
 }
 
-impl GptClient {
-    pub fn new(client: Box<dyn HttpClient>, api_key: String, model: &str) -> Self {
+impl<C: HttpClient> GptClient<C> {
+    pub fn new(client: C, api_key: String, model: &str) -> Self {
         Self {
             client,
             api_key,
