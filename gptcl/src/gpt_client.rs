@@ -17,7 +17,7 @@ impl<C: HttpClient> GptClient<C> {
             client,
             api_key,
             model: model.to_string(),
-            max_tokens: Some(100),
+            max_tokens: None,
             temperature: None,
             top_p: None,
             stop: None,
