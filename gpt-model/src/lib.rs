@@ -14,6 +14,8 @@ pub struct ChatRequest<'a> {
     pub n: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stop: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub response_format: Option<ResponseFormat>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub functions: &'a Vec<Function>,
 }
@@ -133,4 +135,31 @@ pub struct Function {
     pub name: String,
     pub description: Option<String>,
     pub parameters: serde_json::Value,
+}
+
+#[derive(Debug, Clone)]
+pub enum ResponseFormat {
+    Text,
+    Json,
+}
+
+impl Serialize for ResponseFormat {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeMap;
+        match self {
+            ResponseFormat::Text => {
+                let mut map = serializer.serialize_map(Some(1))?;
+                map.serialize_entry("type", "text")?;
+                map.end()
+            }
+            ResponseFormat::Json => {
+                let mut map = serializer.serialize_map(Some(1))?;
+                map.serialize_entry("type", "json_object")?;
+                map.end()
+            }
+        }
+    }
 }

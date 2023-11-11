@@ -1,5 +1,7 @@
 use crate::http_client::HttpClient;
 
+// https://platform.openai.com/docs/api-reference/chat/create
+
 #[derive(Debug)]
 pub struct GptClient<C: HttpClient> {
     client: C,
@@ -9,6 +11,7 @@ pub struct GptClient<C: HttpClient> {
     pub temperature: Option<f32>,
     pub top_p: Option<f32>,
     pub stop: Option<Vec<String>>,
+    pub response_format: Option<gpt_model::ResponseFormat>,
 }
 
 impl<C: HttpClient> GptClient<C> {
@@ -21,6 +24,7 @@ impl<C: HttpClient> GptClient<C> {
             temperature: None,
             top_p: None,
             stop: None,
+            response_format: None,
         }
     }
 
@@ -64,6 +68,7 @@ impl<C: HttpClient> GptClient<C> {
             top_p: self.top_p,
             n,
             stop: self.stop.clone(),
+            response_format: self.response_format.clone(),
             functions,
         };
 
