@@ -1,7 +1,9 @@
+use std::sync::Arc;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize)]
-pub struct ChatRequest<'a> {
+pub struct ChatRequest {
     pub model: String,
     pub messages: Vec<ChatMessage>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -17,7 +19,23 @@ pub struct ChatRequest<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub response_format: Option<ResponseFormat>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub functions: &'a Vec<Function>,
+    pub functions: Arc<Vec<Function>>,
+}
+
+impl ChatRequest {
+    pub fn from_model(model: String) -> Self {
+        Self {
+            model,
+            messages: vec![],
+            max_tokens: None,
+            temperature: None,
+            top_p: None,
+            n: None,
+            stop: None,
+            response_format: None,
+            functions: Arc::new(vec![]),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
