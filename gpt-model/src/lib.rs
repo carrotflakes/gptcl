@@ -1,3 +1,8 @@
+#[cfg(feature = "schemars")]
+pub extern crate schemars;
+#[cfg(feature = "schemars")]
+pub use schemars::{schema_for, JsonSchema};
+
 use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
@@ -83,6 +88,14 @@ impl ChatMessage {
             name: Some(function_name),
             function_call: None,
         }
+    }
+
+    #[cfg(feature = "schemars")]
+    /// Parse the content of the message as a struct
+    pub fn to<'a, T: Deserialize<'a>>(&'a self) -> Option<T> {
+        self.content
+            .as_ref()
+            .and_then(|c| serde_json::from_str(c).ok())
     }
 }
 
@@ -187,4 +200,21 @@ impl Serialize for ResponseFormat {
             }
         }
     }
+}
+
+#[cfg(feature = "schemars")]
+#[macro_export]
+macro_rules! response_format_from_struct {
+    ($type:ty) => {
+        {
+            let schema = $crate::schema_for!($type);
+            let schema_value = ::serde_json::to_value(&schema).unwrap();
+            $crate::ResponseFormat::JsonSchema(
+                ::serde_json::json!({
+                    "name": schema.schema.metadata.map(|m| m.title).map(|t| t.clone()).unwrap(),
+                    "schema": schema_value
+                })
+            )
+        }
+    };
 }

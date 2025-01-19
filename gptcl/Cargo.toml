@@ -3,6 +3,10 @@ name = "gptcl"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+schemars = ["gpt-model/schemars"]
+
 [dependencies]
 gpt-model = { path = "../gpt-model" }
 serde_json = "1.0"
