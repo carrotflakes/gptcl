@@ -159,6 +159,7 @@ pub struct Function {
 pub enum ResponseFormat {
     Text,
     Json,
+    JsonSchema(serde_json::Value),
 }
 
 impl Serialize for ResponseFormat {
@@ -176,6 +177,12 @@ impl Serialize for ResponseFormat {
             ResponseFormat::Json => {
                 let mut map = serializer.serialize_map(Some(1))?;
                 map.serialize_entry("type", "json_object")?;
+                map.end()
+            }
+            ResponseFormat::JsonSchema(schema) => {
+                let mut map = serializer.serialize_map(Some(2))?;
+                map.serialize_entry("type", "json_schema")?;
+                map.serialize_entry("json_schema", schema)?;
                 map.end()
             }
         }
