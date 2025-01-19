@@ -51,6 +51,8 @@ pub struct ChatMessage {
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub function_call: Option<FunctionCall>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refusal: Option<String>,
 }
 
 impl ChatMessage {
@@ -60,6 +62,7 @@ impl ChatMessage {
             content: Some(content),
             name: None,
             function_call: None,
+            refusal: None,
         }
     }
 
@@ -69,6 +72,7 @@ impl ChatMessage {
             content: Some(content),
             name: None,
             function_call: None,
+            refusal: None,
         }
     }
 
@@ -78,6 +82,7 @@ impl ChatMessage {
             content: Some(content),
             name: None,
             function_call: None,
+            refusal: None,
         }
     }
 
@@ -87,15 +92,17 @@ impl ChatMessage {
             content: Some(content),
             name: Some(function_name),
             function_call: None,
+            refusal: None,
         }
     }
 
     #[cfg(feature = "schemars")]
     /// Parse the content of the message as a struct
-    pub fn to<'a, T: Deserialize<'a>>(&'a self) -> Option<T> {
-        self.content
-            .as_ref()
-            .and_then(|c| serde_json::from_str(c).ok())
+    pub fn to<'a, T: Deserialize<'a>>(&'a self) -> Result<T, String> {
+        if let Some(refusal) = &self.refusal {
+            return Err(refusal.clone());
+        }
+        serde_json::from_str(self.content.as_ref().unwrap()).map_err(|e| e.to_string())
     }
 }
 
