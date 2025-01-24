@@ -25,6 +25,8 @@ pub struct ChatRequest {
     pub response_format: Option<ResponseFormat>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub functions: Arc<Vec<Function>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub tools: Arc<Vec<Tool>>,
 }
 
 impl ChatRequest {
@@ -39,6 +41,7 @@ impl ChatRequest {
             stop: None,
             response_format: None,
             functions: Arc::new(vec![]),
+            tools: Arc::new(vec![]),
         }
     }
 }
@@ -53,6 +56,12 @@ pub struct ChatMessage {
     pub function_call: Option<FunctionCall>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refusal: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub tool_calls: Vec<ToolCall>,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    #[serde(default)]
+    pub tool_call_id: String,
 }
 
 impl ChatMessage {
@@ -63,6 +72,8 @@ impl ChatMessage {
             name: None,
             function_call: None,
             refusal: None,
+            tool_calls: Vec::new(),
+            tool_call_id: String::new(),
         }
     }
 
@@ -73,6 +84,8 @@ impl ChatMessage {
             name: None,
             function_call: None,
             refusal: None,
+            tool_calls: Vec::new(),
+            tool_call_id: String::new(),
         }
     }
 
@@ -83,6 +96,8 @@ impl ChatMessage {
             name: None,
             function_call: None,
             refusal: None,
+            tool_calls: Vec::new(),
+            tool_call_id: String::new(),
         }
     }
 
@@ -93,6 +108,20 @@ impl ChatMessage {
             name: Some(function_name),
             function_call: None,
             refusal: None,
+            tool_calls: Vec::new(),
+            tool_call_id: String::new(),
+        }
+    }
+
+    pub fn from_tool_response(id: String, content: String) -> Self {
+        Self {
+            role: ChatRole::Tool,
+            content: Some(content),
+            name: None,
+            function_call: None,
+            refusal: None,
+            tool_calls: Vec::new(),
+            tool_call_id: id,
         }
     }
 
@@ -112,6 +141,7 @@ pub enum ChatRole {
     User,
     Assistant,
     Function,
+    Tool,
 }
 
 impl Serialize for ChatRole {
@@ -124,6 +154,7 @@ impl Serialize for ChatRole {
             ChatRole::User => "user",
             ChatRole::Assistant => "assistant",
             ChatRole::Function => "function",
+            ChatRole::Tool => "tool",
         })
     }
 }
@@ -153,6 +184,13 @@ pub struct FunctionCall {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ToolCall {
+    pub id: String,
+    pub r#type: String,
+    pub function: FunctionCall,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatChoice {
     pub index: u32,
     pub message: ChatMessage,
@@ -166,6 +204,13 @@ pub struct ChatResponse {
     pub object: String,
     pub created: u64,
     pub choices: Vec<ChatChoice>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum Tool {
+    #[serde(rename = "function")]
+    Function { function: Function },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
