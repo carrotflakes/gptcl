@@ -12,7 +12,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let client = GptClient::new(HyperClient::new(), openai_api_key);
 
-    let mut request = ChatRequest::from_model(gptcl::MODEL_GPT_3_5_TURBO.to_string());
+    let mut request = ChatRequest::from_model(gptcl::MODEL_GPT_4O_MINI.to_string());
     request.messages = vec![
         ChatMessage::from_user("Hello! How are you today?".to_string()),
         ChatMessage::from_assistant("Hi there! I'm just a computer program, so I don't have feelings, but I'm here to help you with any questions or chat topics you have. What's on your mind today?".to_string()),
