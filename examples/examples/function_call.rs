@@ -29,7 +29,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     },
                 },
                 "type": "object",
+                "required": ["word"],
+                "additionalProperties": false,
             }),
+            strict: true,
         },
     }]);
 

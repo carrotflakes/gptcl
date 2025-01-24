@@ -2,6 +2,7 @@
 pub extern crate schemars;
 #[cfg(feature = "schemars")]
 pub use schemars::{schema_for, JsonSchema};
+use serde_json::json;
 
 use std::sync::Arc;
 
@@ -27,6 +28,8 @@ pub struct ChatRequest {
     pub functions: Arc<Vec<Function>>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tools: Arc<Vec<Tool>>,
+    #[serde(default = "ToolChoice::Auto")]
+    pub tool_choice: ToolChoice,
 }
 
 impl ChatRequest {
@@ -42,6 +45,7 @@ impl ChatRequest {
             response_format: None,
             functions: Arc::new(vec![]),
             tools: Arc::new(vec![]),
+            tool_choice: ToolChoice::Auto,
         }
     }
 }
@@ -213,11 +217,39 @@ pub enum Tool {
     Function { function: Function },
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub enum ToolChoice {
+    Auto,
+    Required,
+    ForcedFunction { function_name: String },
+}
+
+impl Serialize for ToolChoice {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeMap;
+        match self {
+            ToolChoice::Auto => serializer.serialize_str("auto"),
+            ToolChoice::Required => serializer.serialize_str("required"),
+            ToolChoice::ForcedFunction { function_name } => {
+                let mut map = serializer.serialize_map(Some(2))?;
+                map.serialize_entry("type", "function")?;
+                map.serialize_entry("function", &json!({"name": function_name}))?;
+                map.end()
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Function {
     pub name: String,
     pub description: Option<String>,
     pub parameters: serde_json::Value,
+    #[serde(default)]
+    pub strict: bool,
 }
 
 #[derive(Debug, Clone)]
