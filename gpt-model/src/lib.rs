@@ -24,6 +24,7 @@ pub struct ChatRequest {
     pub stop: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub response_format: Option<ResponseFormat>,
+    #[deprecated = "Use `tools` instead"]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub functions: Arc<Vec<Function>>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -33,6 +34,7 @@ pub struct ChatRequest {
 }
 
 impl ChatRequest {
+    #![allow(deprecated)]
     pub fn from_model(model: String) -> Self {
         Self {
             model,
