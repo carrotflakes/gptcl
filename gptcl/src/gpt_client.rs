@@ -4,15 +4,22 @@ use crate::http_client::HttpClient;
 
 // https://platform.openai.com/docs/api-reference/chat/create
 
+pub const OPENAI_CHAT_ENDPOINT: &str = "https://api.openai.com/v1/chat/completions";
+
 #[derive(Debug)]
 pub struct GptClient<C: HttpClient> {
     client: C,
     pub api_key: String,
+    pub endpoint: String,
 }
 
 impl<C: HttpClient> GptClient<C> {
     pub fn new(client: C, api_key: String) -> Self {
-        Self { client, api_key }
+        Self {
+            client,
+            api_key,
+            endpoint: OPENAI_CHAT_ENDPOINT.to_string(),
+        }
     }
 
     pub async fn call(
@@ -21,7 +28,7 @@ impl<C: HttpClient> GptClient<C> {
     ) -> Result<gpt_model::ChatResponse, Box<dyn std::error::Error + Send + Sync>> {
         self.client
             .post(
-                "https://api.openai.com/v1/chat/completions",
+                &self.endpoint,
                 &self.api_key,
                 serde_json::to_string(request).unwrap(),
             )
