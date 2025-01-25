@@ -29,8 +29,8 @@ pub struct ChatRequest {
     pub functions: Arc<Vec<Function>>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub tools: Arc<Vec<Tool>>,
-    #[serde(default = "ToolChoice::Auto")]
-    pub tool_choice: ToolChoice,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tool_choice: Option<ToolChoice>,
 }
 
 impl ChatRequest {
@@ -47,7 +47,7 @@ impl ChatRequest {
             response_format: None,
             functions: Arc::new(vec![]),
             tools: Arc::new(vec![]),
-            tool_choice: ToolChoice::Auto,
+            tool_choice: None,
         }
     }
 }
