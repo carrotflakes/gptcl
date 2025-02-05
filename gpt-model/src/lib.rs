@@ -23,6 +23,8 @@ pub struct ChatRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stop: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub user: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub response_format: Option<ResponseFormat>,
     #[deprecated = "Use `tools` instead"]
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -44,6 +46,7 @@ impl ChatRequest {
             top_p: None,
             n: None,
             stop: None,
+            user: None,
             response_format: None,
             functions: Arc::new(vec![]),
             tools: Arc::new(vec![]),
